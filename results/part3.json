@@ -1,0 +1,174 @@
+{
+ "design": {
+  "resamples": 2000,
+  "mean_block_weeks": 8,
+  "seed": 2025,
+  "weeks": 522
+ },
+ "weights": {
+  "max_sharpe": {
+   "point_estimate": {
+    "NVDA": 0.4046,
+    "VOO": 0.0,
+    "ARU": 0.0505,
+    "SGLN": 0.5449
+   },
+   "p05": {
+    "NVDA": 0.2139,
+    "VOO": 0.0,
+    "ARU": 0.0,
+    "SGLN": 0.1683
+   },
+   "p50": {
+    "NVDA": 0.3906,
+    "VOO": 0.0,
+    "ARU": 0.0472,
+    "SGLN": 0.5406
+   },
+   "p95": {
+    "NVDA": 0.7066,
+    "VOO": 0.1497,
+    "ARU": 0.1607,
+    "SGLN": 0.7256
+   },
+   "std": {
+    "NVDA": 0.1528,
+    "VOO": 0.0687,
+    "ARU": 0.0556,
+    "SGLN": 0.169
+   }
+  },
+  "min_variance": {
+   "point_estimate": {
+    "NVDA": 0.0,
+    "VOO": 0.3982,
+    "ARU": 0.0,
+    "SGLN": 0.6018
+   },
+   "p05": {
+    "NVDA": 0.0,
+    "VOO": 0.3191,
+    "ARU": 0.0,
+    "SGLN": 0.5209
+   },
+   "p50": {
+    "NVDA": 0.0,
+    "VOO": 0.4039,
+    "ARU": 0.0,
+    "SGLN": 0.596
+   },
+   "p95": {
+    "NVDA": 0.0,
+    "VOO": 0.4788,
+    "ARU": 0.0,
+    "SGLN": 0.6807
+   },
+   "std": {
+    "NVDA": 0.0,
+    "VOO": 0.0485,
+    "ARU": 0.0006,
+    "SGLN": 0.0486
+   }
+  },
+  "risk_parity": {
+   "point_estimate": {
+    "NVDA": 0.126,
+    "VOO": 0.3039,
+    "ARU": 0.0889,
+    "SGLN": 0.4812
+   },
+   "p05": {
+    "NVDA": 0.1109,
+    "VOO": 0.2816,
+    "ARU": 0.0759,
+    "SGLN": 0.4582
+   },
+   "p50": {
+    "NVDA": 0.1246,
+    "VOO": 0.3054,
+    "ARU": 0.0879,
+    "SGLN": 0.4801
+   },
+   "p95": {
+    "NVDA": 0.1404,
+    "VOO": 0.3335,
+    "ARU": 0.1024,
+    "SGLN": 0.5051
+   },
+   "std": {
+    "NVDA": 0.0093,
+    "VOO": 0.0158,
+    "ARU": 0.0081,
+    "SGLN": 0.0142
+   }
+  }
+ },
+ "max_sharpe_facts": {
+  "share_voo_below_1pct": 0.89,
+  "share_voo_above_20pct": 0.034,
+  "share_nvda_largest": 0.301,
+  "share_sgln_largest": 0.691,
+  "share_aru_above_10pct": 0.1915,
+  "mean_total_std": 0.11150658587085
+ },
+ "dispersion_ratio_max_sharpe_vs_min_variance": 4.565653124446535,
+ "asset_sharpe": {
+  "NVDA": {
+   "estimate": 1.4553096838531672,
+   "p05": 0.871555535583948,
+   "p95": 2.0348909043240395
+  },
+  "VOO": {
+   "estimate": 0.7207121494151265,
+   "p05": 0.2808401997497077,
+   "p95": 1.2240735967472496
+  },
+  "ARU": {
+   "estimate": 0.5012375704311477,
+   "p05": -0.02216509498198055,
+   "p95": 0.9865577597608188
+  },
+  "SGLN": {
+   "estimate": 0.6928299526054331,
+   "p05": 0.21829346925962712,
+   "p95": 1.1415525767956574
+  }
+ },
+ "share_voo_sharpe_above_sgln": 0.532,
+ "share_nvda_sharpe_highest": 0.9515,
+ "max_sharpe_value": {
+  "estimate": 1.6004515289028258,
+  "p05": 1.1099396194829774,
+  "p95": 2.2137775603820864,
+  "mean_in_resample": 1.6732412003754862,
+  "mean_of_same_weights_on_original_sample": 1.5437570709087958
+ },
+ "rolling_sharpe_ci": {
+  "max_sharpe": {
+   "estimate": 0.8801313428423075,
+   "p05": 0.3000567520230193,
+   "p95": 1.499443606875913
+  },
+  "min_variance": {
+   "estimate": 0.9210249833666388,
+   "p05": 0.3974881247740095,
+   "p95": 1.4658845454703258
+  },
+  "risk_parity": {
+   "estimate": 1.0973703320651476,
+   "p05": 0.5407978136427556,
+   "p95": 1.6719019416518337
+  },
+  "equal_weight": {
+   "estimate": 0.9167086973106057,
+   "p05": 0.355379733232128,
+   "p95": 1.4692356458710993
+  }
+ },
+ "rolling_sharpe_difference_risk_parity_minus_max_sharpe": {
+  "estimate": 0.21723898922284002,
+  "p05": -0.13690329005419274,
+  "p95": 0.5425862642437291,
+  "share_positive": 0.8455
+ }
+}

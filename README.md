@@ -1,379 +1,186 @@
-# 3D Portfolio Optimization and Efficient Surface Analysis
+# A Four-Asset Efficient Frontier in Three Dimensions
 
-Hi! I'm Mael. At the time of writing, I was in my summer of Junior High School year. I am now a Freshman at McGill University, passionate about finance, quantitative analysis, investing, and the intersection of technology and markets. I intend to pursue studies and a career in hedge funds in the United States. My experiences include a work experience placement at Morgan Stanley, a two-week research placement at the University of Montpellier exploring quantitative and computational finance tools, co-founding and hosting two podcasts, award-winning public speaking and debate achievements, and being an ardent golfer. This coding project represents my exploration into quantitative finance using Python—as I am learning programming, I want to be transparent that I utilized AI tools to assist in development.
+**Estimation Error and an Out-of-Sample Test**
+Mael Tok (McGill University). First version July 2025; this version November 2026.
 
-## Purpose and Motivation
+🌐 **Interactive figures:** <https://2008mt.github.io/efficient-frontier-3d/>
+📄 **Note:** [`TOK_EFFICIENT_FRONTIER_3D.pdf`](TOK_EFFICIENT_FRONTIER_3D.pdf)
 
-This project demonstrates advanced 3D visualization techniques for Modern Portfolio Theory (MPT) optimization, addressing a common problem in portfolio analysis: **how to meaningfully visualize multi-dimensional portfolio optimization in 3D space**.
+[![The weight tetrahedron](figures/fig2_simplex.png)](https://2008mt.github.io/efficient-frontier-3d/)
 
-Traditional portfolio optimization often relies on 2D efficient frontier plots, but these can hide important relationships between asset allocations, risk, return, and optimization metrics. This project explores multiple 3D visualization approaches to provide deeper insights into portfolio construction and the geometric properties of the efficient frontier.
+## Summary
 
-**Key Research Questions:**
-- How can we effectively visualize 4+ asset portfolios in 3D space?
-- What insights are revealed when we separate risk-return relationships from asset allocation patterns?
-- How do different visualization approaches highlight different aspects of portfolio optimization?
+In July 2025 I optimised a portfolio of four assets (Nvidia, an S&P 500 fund, the rare-earth developer
+Arafura, and gold) and published the mix with the highest Sharpe ratio. This version redoes that
+exercise with the measurement fixed, then tests it on data the optimiser never saw.
 
-## Theoretical Foundation
+- **In sample, the answer is still a barbell.** On weekly US-dollar returns from 2015 to 2025 the best
+  long-only portfolio is 40% Nvidia, 54% gold, 5% Arafura and no S&P 500, with a Sharpe ratio of 1.60.
+- **The optimum is flat.** 19% of all portfolios have a Sharpe ratio within 10% of the best. Among
+  those within 5%, the Nvidia weight ranges from 25% to 75%.
+- **It does not hold up out of sample.** Re-estimated every four weeks on the previous three years, the
+  maximum-Sharpe rule expected a Sharpe ratio of 1.53 and earned 0.88, with a 47% drawdown. Equal
+  weights earned 0.92 and risk parity 1.10.
+- **The weights are mostly noise.** In 2,000 bootstrap resamples the optimal Nvidia weight has a 90%
+  interval of 21% to 71%. Risk-parity weights barely move.
+- **The published portfolio since publication.** From August 2025 to November 2026 it returned 12.6%
+  with a Sharpe ratio of 0.36, against 1.56 in sample. The S&P 500 fund, which it excluded, returned
+  20.1%. The comparison depends on the end date (see below); the misjudged risk does not.
+- **Volatility is not the whole of risk.** The S&P 500 fund's worst weeks are 1.22 times as bad as a
+  normal distribution implies; Arafura's are 0.86 times, because its large moves are upward jumps.
 
-### Modern Portfolio Theory (Markowitz Framework)
+## What changed since the first version
 
-This analysis is built upon Harry Markowitz's foundational Modern Portfolio Theory (1952), which established the mathematical foundation for portfolio optimization. Modern portfolio theory (MPT), or mean-variance analysis, is a mathematical framework for assembling a portfolio of assets such that the expected return is maximized for a given level of risk. It is a formalization and extension of diversification in investing, the idea that owning different kinds of financial assets is less risky than owning only one type. Its key insight is that an asset's risk and return should not be assessed by itself, but by how it contributes to a portfolio's overall risk and return.
+The first version is kept in [`legacy/`](legacy/). Rereading it a year later I found four problems.
 
-#### Core Principles
+| Problem in the first version | Fix |
+|---|---|
+| Returns in three currencies (USD, AUD, GBP) combined as if one investor could earn them all | Everything converted to US dollars |
+| Daily returns from markets that close up to 15 hours apart, which pushes correlations towards zero | Weekly returns, Friday to Friday |
+| The main 3D plot used volatility, return and the Sharpe ratio as axes. The third is the second divided by the first, so the plot was a 2D picture drawn in 3D | The weights themselves are the three dimensions (a tetrahedron), and a separate plot adds tail risk |
+| The portfolio was chosen and judged on the same ten years | Rolling out-of-sample test, a hold-out period, and a bootstrap |
 
-**1. Expected Portfolio Return:**
+The measurement fixes matter. The correlation between the S&P 500 fund and Arafura is 0.07 on the
+first version's daily local-currency data and 0.25 on weekly dollar data; between the S&P 500 fund and
+gold it goes from −0.11 to 0.14.
 
-$$
-E[R_p] = \sum_{i=1}^N w_i \cdot E[R_i]
-$$
+## Results
 
-Where:
-- $w_i$ : Weight of asset $i$
-- $E[R_i]$ : Expected (annualized) return of asset $i$
-- $N$ : Number of assets
+### The assets (31 July 2015 to 25 July 2025, 522 weeks)
 
-**2. Portfolio Standard Deviation (Risk):**
+| | Excess return | Compound growth | Volatility | Sharpe | Skewness | CVaR ÷ normal |
+|---|---:|---:|---:|---:|---:|---:|
+| **NVDA** | 67.9% | 80.2% | 46.6% | 1.46 | 0.32 | 0.98 |
+| **VOO** | 12.5% | 13.8% | 17.3% | 0.72 | −0.64 | 1.22 |
+| **ARU** | 37.0% | 14.6% | 73.9% | 0.50 | 1.30 | 0.86 |
+| **SGLN** | 10.0% | 11.6% | 14.5% | 0.69 | 0.24 | 1.01 |
 
-$$
-\sigma_p = \sqrt{ \sum_{i=1}^n \sum_{j=1}^n w_iw_jCov(R_i; R_j) }
-= \sqrt{ \mathbf{w}^T \Sigma \mathbf{w} }
-$$
+Excess return is the annualised arithmetic mean over Treasury bills, which is what the optimiser uses.
+Compound growth is what a dollar actually earned. For Arafura the two are far apart: an average return
+of 39% a year, but 14.6% compound growth, because at 74% volatility the losses compound harder than
+the gains.
 
-Where:
-- $\mathbf{w}$ : Vector of asset weights
-- $\Sigma$ : Covariance matrix of asset returns
+### The frontier
 
-**3. Sharpe Ratio (Risk-Adjusted Return):**
+![Efficient frontier](figures/fig1_frontier.png)
 
-$$
-Sharpe = \frac{E[R_i]-R_f}{\sigma_p}
-$$
+| Portfolio | NVDA | VOO | ARU | SGLN | Excess return | Volatility | Sharpe |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Maximum Sharpe | 40.5% | 0.0% | 5.1% | 54.5% | 34.8% | 21.7% | 1.60 |
+| Published July 2025 | 28.6% | 0.0% | 6.1% | 65.3% | 28.2% | 18.1% | 1.56 |
+| Equal weight | 25.0% | 25.0% | 25.0% | 25.0% | 31.9% | 26.2% | 1.21 |
+| Risk parity | 12.6% | 30.4% | 8.9% | 48.1% | 20.5% | 15.7% | 1.31 |
+| Minimum variance | 0.0% | 39.8% | 0.0% | 60.2% | 11.0% | 11.9% | 0.93 |
 
-Where:
-- $R_f$ = Risk-free rate (assumed to be 0 in this analysis)
+The frontier is solved exactly by quadratic programming, and checked against a lattice of 12,341
+portfolios.
 
-#### The Efficient Frontier
+### Tail risk
 
-The efficient frontier represents the set of optimal portfolios offering the highest expected return for each level of risk. Mathematically, this is a constrained optimization problem:
+![Tail risk](figures/fig3_tail.png)
 
-**Minimize:** $\sigma_p$ (portfolio standard deviation)
-**Subject to:**
-- $\Sigma w_i = 1$ (weights sum to 1)
-- $w_i ≥ 0$ (no short selling)
-- $E[R_p]=$ target return (for each target return level)
+For each portfolio I compare the average loss in its worst 5% of weeks (CVaR) with what a normal
+distribution of the same volatility implies. 65% of portfolios have a fatter left tail than the normal
+benchmark. Minimising CVaR instead of variance changes the frontier weights by at most 14 percentage
+points and lowers CVaR by 1.7% on average, so here it refines the answer but does not change it.
+The asymmetry in Arafura matches what I found on daily data in a
+[separate paper](https://github.com/2008MT/aru-garch-var).
 
-#### Multi-Dimensional Challenge
+### Out of sample
 
-With 4 assets, we have a 4-dimensional optimization space constrained to a 3-dimensional simplex (due to the weight constraint). This creates visualization challenges that this project addresses through multiple complementary 3D representations.
+![Out of sample](figures/fig4_out_of_sample.png)
 
-## Methodology
+**Rolling test, 27 July 2018 to 13 November 2026** (434 weeks, 109 rebalances, no costs):
 
-**We fetch data for the last 10 years (mid 2015-2025) using `yFinance`.**
+| Rule | Sharpe | 90% interval | Compound growth | Volatility | Worst drawdown | Turnover a year |
+|---|---:|:---:|---:|---:|---:|---:|
+| Maximum Sharpe | 0.88 | 0.30 to 1.50 | 27.0% | 28.8% | −47% | 93% |
+| Equal weight | 0.92 | 0.36 to 1.47 | 27.7% | 28.0% | −33% | 49% |
+| Risk parity | 1.10 | 0.54 to 1.67 | 22.6% | 17.5% | −26% | 33% |
+| Minimum variance | 0.92 | 0.40 to 1.47 | 14.9% | 13.1% | −18% | 20% |
 
-### Asset Selection Strategy
+The ranking among the rules is not statistically reliable; the intervals overlap almost entirely. What
+the test shows is that optimising on estimated returns bought more turnover and a deeper drawdown and
+no measurable gain.
 
-Our portfolio consists of four strategically selected assets:
+**Hold-out, 1 August 2025 to 13 November 2026** (68 weeks, weights fixed in July 2025):
 
-- **Nvidia (NVDA):** A leading technology company in AI and semiconductors, offering high growth potential and significant volatility. NVDA is chosen for its representation of innovation and tech sector exposure.
-- **S&P 500 Vanguard ETF (VOO):** This ETF tracks the S&P 500 index, providing broad exposure to the US equity market with relatively lower volatility. It supplies stability and diversification.
-- **Arafura Rare Earths Ltd (ARU):** An Australian mining company focused on rare earths, ARU adds sector-specific risk and the potential for outsized returns due to its exposure to critical minerals needed for renewable energy and tech.
-- **iShares Physical Gold ETF (SGLN):** Gold is a classic defensive asset. SGLN brings stability and acts as a hedge against market downturns, with typically low correlation to equities.
+| | Sharpe to July 2025 | Total return | Volatility | Sharpe | Worst drawdown |
+|---|---:|---:|---:|---:|---:|
+| Published July 2025 | 1.56 | 12.6% | 21.1% | 0.36 | −22% |
+| Equal weight | 1.21 | 15.9% | 27.4% | 0.41 | −26% |
+| Risk parity | 1.31 | 18.3% | 18.5% | 0.58 | −17% |
+| Minimum variance | 0.93 | 19.1% | 15.4% | 0.70 | −12% |
+| NVDA | 1.46 | −5.9% | 33.7% | −0.08 | −30% |
+| VOO | 0.72 | 20.1% | 12.0% | 0.92 | −8% |
+| ARU | 0.50 | −20.7% | 78.6% | 0.11 | −63% |
+| SGLN | 0.69 | 16.4% | 22.4% | 0.46 | −26% |
 
-**Why this mix?**  
-Combining these assets allows us to study the trade-off between risk and return, diversification benefits, and how different sectors and asset classes interact in portfolio construction. This combination provides exposure to growth, value, commodities, and defensive assets - ideal for demonstrating diversification effects.
+Sixty-eight weeks is too short to settle anything, and the verdict depends on the end date: the
+published portfolio was ahead of the S&P 500 fund at 41 of the 43 possible end dates since January
+2026, was up 44% at its peak in May 2026, and fell behind only in the last two weeks. What does not
+depend on the end date is that its risk was misjudged. Gold, the defensive half of the barbell, had a
+volatility of 22% in the hold-out against 14% before.
 
-### Data Processing Pipeline
+### Estimation error
 
-#### 1. Data Acquisition
-```python
-def fetch_data(self):
-    # Robust ticker resolution with fallbacks
-    ticker_variants = {
-        'NVDA': ['NVDA'],
-        'VOO': ['VOO', 'VUAA.L', 'VUAA'],
-        'ARU': ['ARU.AX', 'ARU'],
-        'SGLN': ['SGLN.L', 'IAU', 'GLD']
-    }
-    # Fetches 10 years of historical data
-    # Validates data quality (>100 trading days minimum)
+| 90% bootstrap interval | NVDA | VOO | ARU | SGLN |
+|---|:---:|:---:|:---:|:---:|
+| Maximum Sharpe | 21% to 71% | 0% to 15% | 0% to 16% | 17% to 73% |
+| Minimum variance | 0% to 0% | 32% to 48% | 0% to 0% | 52% to 68% |
+| Risk parity | 11% to 14% | 28% to 33% | 8% to 10% | 46% to 51% |
+
+The maximum-Sharpe weights are 4.6 times as dispersed as the minimum-variance weights. One result is
+stable: the S&P 500 fund gets less than 1% in 89% of resamples. But a bootstrap can only reshuffle the
+decade it is given, a decade in which Nvidia compounded at 80% a year. It measures sampling noise, not
+the chance that the next decade is different.
+
+## Limitations
+
+- **The assets were chosen with hindsight.** I picked Nvidia in 2025 knowing how it had done. No test
+  inside these four assets removes that.
+- **Closing times still differ.** Weekly returns overlap by about 90%, not fully.
+- **No trading costs.** Arafura trades on a coarse price grid, so the high-turnover rule would cost
+  more than the others.
+- **Thin tails.** A 5% tail of 522 weeks is 26 observations.
+- **Long only, four assets, one decade.**
+
+## Repository layout
+
+```
+TOK_EFFICIENT_FRONTIER_3D.pdf      the note
+index.html, plots/                 the website (served by GitHub Pages)
+main.tex, numbers.tex, tables/     LaTeX source of the note
+code/                              Python code that produces every number, table and figure
+results/                           output of the code (JSON and CSV)
+figures/                           static figures
+data/                              data description (prices are downloaded, not stored)
+legacy/                            the first version (July 2025), unchanged
 ```
 
-#### 2. Statistical Computation
-```python
-def portfolio_metrics(self, weights):
-    # Annualized expected return
-    portfolio_return = np.sum(weights * self.mean_returns)
-    # Portfolio volatility using covariance matrix
-    portfolio_volatility = np.sqrt(np.dot(weights.T, np.dot(self.cov_matrix, weights)))
-    return portfolio_return, portfolio_volatility
-```
-
-#### 3. Optimization Space Generation
-```python
-def generate_grid_surface(self, n_points=50):
-    # Creates n³ weight combinations for first 3 assets
-    # 4th asset weight = 1 - sum(other weights)
-    # Filters for valid portfolios (all weights ≥ 0, ≤ 1)
-    # Computes return, volatility, Sharpe ratio for each
-```
-
-## Key Implementation Features
-
-### Multi-Perspective Visualization Architecture
-
-The solution provides **five complementary visualizations** rather than forcing all information into a single 3D plot:
-
-#### 1. Risk-Return-Sharpe 3D Relationship
-```python
-ax1.scatter(volatilities, returns, sharpes, c=sharpes, cmap='viridis')
-ax1.set_xlabel('Portfolio Volatility (Risk)')
-ax1.set_ylabel('Portfolio Return')  
-ax1.set_zlabel('Sharpe Ratio')
-```
-**Purpose:** Shows the fundamental MPT relationship between risk, return, and efficiency.
-
-#### 2. Asset Allocation Space Analysis
-```python
-ax2.scatter(nvda_w, voo_w, aru_w, c=sharpes, cmap='plasma')
-ax2.set_xlabel('NVDA Weight')
-ax2.set_ylabel('VOO Weight')
-ax2.set_zlabel('ARU Weight')
-```
-**Purpose:** Visualizes how different weight combinations affect portfolio efficiency.
-
-#### 3. Dominant Asset Pattern Recognition
-```python
-weights_matrix = np.vstack([nvda_w, voo_w, aru_w, sgln_w]).T
-dominant_asset = np.argmax(weights_matrix, axis=1)
-# Color-codes portfolios by their dominant holding
-```
-**Purpose:** Reveals which assets drive performance in different regions of the efficient frontier.
-
-#### 4. Enhanced Efficient Frontier (2D)
-```python
-# Finds upper envelope of risk-return combinations
-efficient_points = []
-max_return_so_far = -np.inf
-for vol, ret in zip(vol_sorted, ret_sorted):
-    if ret > max_return_so_far:
-        efficient_points.append((vol, ret))
-        max_return_so_far = ret
-```
-**Purpose:** Traditional efficient frontier with proper mathematical derivation.
-
-#### 5. Risk-Sharpe Optimization Surface
-```python
-ax2.scatter(volatilities, sharpes, c=returns, cmap='plasma')
-# Highlights maximum Sharpe ratio portfolio
-max_sharpe_idx = np.argmax(sharpes)
-ax2.scatter(volatilities[max_sharpe_idx], sharpes[max_sharpe_idx], 
-           c='red', s=100, marker='*')
-```
-**Purpose:** Shows the risk-efficiency tradeoff independent of return levels.
-
-### Advanced Portfolio Analysis
-
-#### Optimal Portfolio Detection
-```python
-def find_optimal_portfolios(self):
-    # Minimum Volatility Portfolio
-    min_vol_idx = df['volatility'].idxmin()
-    # Maximum Return Portfolio  
-    max_return_idx = df['return'].idxmax()
-    # Maximum Sharpe Ratio Portfolio
-    max_sharpe_idx = df['sharpe'].idxmax()
-    # Efficient portfolios at different risk percentiles
-    for p in [10, 30, 50, 70, 90]:
-        vol_target = np.percentile(volatilities, p)
-        # Find highest return at each risk level
-```
-
-## Results and Analysis
-
-**We get data for 2435 trading days, or a time period spanning from late November or early December 2015 to late July 2025.**
-
-### Asset Performance Statistics (Annualized)
-
-| Asset | Expected Return | Volatility | Sharpe Ratio |
-|-------|----------------|------------|--------------|
-| **NVDA** | 73.6% | 50.5% | 1.456 |
-| **VOO** | 15.0% | 18.6% | 0.806 |
-| **ARU** | 47.9% | 82.8% | 0.578 |
-| **SGLN** | 14.0% | 15.1% | 0.927 |
-
----
-
-### Portfolio Universe Generated: 
-22,090 valid portfolios from 125,000 (`n_points=50`, 50³)combinations (17.7% efficiency)
-
-- Return Range: 14.0% to 73.6%
-- Volatility Range: 11.1% to 82.8%
-- Sharpe Range: 0.579 to 1.865
-
----
-
-### Risk Scaling Patterns
-
-| Risk Level | NVDA | VOO | ARU | SGLN | Return | Volatility | Sharpe |
-|------------|------|-----|-----|------|--------|------------|--------|
-| 10th %ile | 26.5% | 6.1% | 6.1% | 61.2% | 31.96% | 17.22% | 1.856 |
-| 30th %ile | 42.9% | 2.0% | 8.2% | 46.9% | 42.34% | 23.70% | 1.786 |
-| 50th %ile | 55.1% | 0.0% | 12.2% | 32.7% | 51.00% | 29.96% | 1.702 |
-| 70th %ile | 67.3% | 0.0% | 16.3% | 16.3% | 59.69% | 36.86% | 1.619 |
-| 90th %ile | 93.9% | 0.0% | 6.1% | 0.0% | 72.04% | 47.85% | 1.506 |
-
-**Pattern:** As risk tolerance increases, NVDA allocation grows while SGLN decreases, maintaining optimal risk-adjusted returns. We notice a relatively important decrease in sharpe ratio from the 50th %ile.
-
----
-
-### Data Visualisations Analysis
-
-#### 1. Risk-Return-Sharpe 3D Relationship
-
-<img width="280" height="243" alt="Screenshot 2025-07-29 at 10 27 43" src="https://github.com/user-attachments/assets/1423ea2e-56b5-4bca-bdf0-8999bdbcd02e" />
-
-This fundamental visualization maps the core Modern Portfolio Theory relationship in three dimensions:
-
-- X-axis: Portfolio Volatility (Risk)
-- Y-axis: Portfolio Return
-- Z-axis: Sharpe Ratio
-- Color: Sharpe Ratio intensity
-
-#### Key Interpretations:
-
-- The curved surface represents the feasible portfolio space, showing how risk and return combine to produce different efficiency levels
-- Peak efficiency region (bright yellow/green) occurs at moderate risk levels (~17-30% volatility) with Sharpe ratios exceeding 1.6
-- Diminishing returns are clearly visible: beyond 40% volatility, Sharpe ratios decline despite higher returns
-- The 3D curvature reveals that the traditional 2D efficient frontier is actually a projection of this more complex surface
-
-#### Curated Result Analysis:
-The optimal risk-return combination doesn't occur at maximum return but rather where the Sharpe ratio peaks, demonstrating the importance of risk-adjusted thinking.
-
-#### 2. Asset Allocation Space
-
-<img width="268" height="230" alt="Screenshot 2025-07-29 at 10 28 05" src="https://github.com/user-attachments/assets/69074523-21e2-4575-a74e-410fcfb00b6c" />
-
-This visualization maps portfolio weights in 3D space:
-
-- X-axis: NVDA Weight (0-100%)
-- Y-axis: VOO Weight (0-100%)
-- Z-axis: ARU Weight (0-100%)
-- Color: Sharpe Ratio (SGLN weight = 1 - others)
-
-#### Key Interpretations:
-
-- High-efficiency zone (yellow region) concentrates in the low-VOO, moderate-NVDA space
-- The constraint surface forms a triangular shape due to the weight sum constraint
-- VOO-heavy allocations (high Y-axis) consistently show poor Sharpe ratios (purple/dark colors)
-- NVDA-ARU combinations without VOO dominate the efficient region
-
-#### Curated Result Analysis:
-This confirms that VOO adds little value to this particular asset mix, being crowded out by more efficient combinations of growth (NVDA) and defensive (SGLN) assets.
-
-#### 3. Risk-Return by Dominant Asset
-
-<img width="409" height="311" alt="Screenshot 2025-07-28 at 17 44 01" src="https://github.com/user-attachments/assets/3dec7497-dc55-46c1-a7d8-ab59645405ee" />
-
-This plot reveals which asset drives performance in different portfolio regions:
-
-Same axes as Plot 1 but colored by dominant holding
-- Red: NVDA-dominant portfolios
-- Blue: VOO-dominant portfolios
-- Green: ARU-dominant portfolios
-- Gold: SGLN-dominant portfolios
-
-#### Key Interpretations:
-
-- SGLN dominance (gold) clusters in the low-risk, moderate-return region (defensive zone)
-- NVDA dominance (red) occupies the high-risk, very-high-return space (growth zone)
-- ARU dominance (green) occupies the high-risk, high-return space (moderate growth zone)
-- VOO (blue) barely appears in this mix, surprising as it is usually considered as an important diversifier
-- Clear bifurcation between defensive (SGLN) and growth (NVDA) strategies
-
-#### Curated Result Analysis:
-The optimal approach is a "barbell strategy" - combine defensive assets (SGLN) for stability with high-growth assets (NVDA) for returns, avoiding the "middle ground" (VOO) assets.
-
-#### 4. Enhanced Efficient Frontier
-
-<img width="445" height="370" alt="Screenshot 2025-07-28 at 17 53 12" src="https://github.com/user-attachments/assets/31cf37b2-89e7-4f69-9d83-ba84c1e00eb3" />
-
-The traditional 2D efficient frontier enhanced with mathematical rigor:
-
-- Scatter points: All feasible portfolios colored by Sharpe ratio
-- Red line: Mathematically derived efficient frontier (upper envelope)
-- Color gradient: Sharpe ratio from low (purple) to high (yellow)
-
-#### Key Interpretations:
-
-- Classic hyperbolic shape confirms theoretical expectations
-- Efficient frontier clearly separates optimal from suboptimal portfolios
-- High Sharpe region (yellow/green) forms a narrow band along the frontier
-- Dominated portfolios (purple region) show inferior risk-return combinations
-
-#### Validation: 
-This plot validates our 3D analysis by showing the traditional efficient frontier, confirming that our multi-dimensional approach captures the same mathematical relationships.
-
-#### 5. Risk vs Sharpe Ratio Analysis
-
-<img width="418" height="358" alt="Screenshot 2025-07-28 at 17 55 17" src="https://github.com/user-attachments/assets/c2bd7344-2c0e-47f8-8870-949a91c85d1a" />
-
-This unique perspective shows the risk-efficiency tradeoff:
-
-- X-axis: Portfolio Volatility
-- Y-axis: Sharpe Ratio
-- Color: Portfolio Return
-- Red star: Maximum Sharpe ratio portfolio
-
-#### Key Interpretations:
-
-- Inverted relationship: Higher risk generally leads to lower Sharpe ratios beyond the optimal point
-- Sweet spot at ~17-18% volatility where Sharpe ratio peaks at 1.865
-- Return gradient (color) shows that moderate-return portfolios can be more efficient than high-return ones
-- Sharp decline in efficiency beyond 30% volatility
-
-#### Risk Management Insight: 
-This plot is crucial for risk management, showing that accepting higher volatility doesn't necessarily improve risk-adjusted returns.
-
----
-
-### Other Key Findings
-
-#### 1. **Optimal Portfolio Composition**
-
-**Maximum Sharpe Ratio Portfolio (1.865):**
-- NVDA: 28.6% (controlled high-growth exposure)
-- SGLN: 65.3% (heavy defensive weighting)
-- ARU: 6.1% (minimal commodity exposure)
-- VOO: 0.0% (completely excluded!)
-
-**Interpretation:** The optimization reveals a "barbell strategy" combining high-growth assets with defensive holdings, rather than traditional balanced allocation.
-
-#### 2. **Surprising VOO Exclusion**
-
-Despite being a broad market ETF, VOO receives zero allocation in the optimal portfolio. This occurs because:
-- SGLN provides superior diversification benefits during this time period
-- NVDA offers better risk-adjusted returns for growth exposure
-- The correlation structure makes VOO redundant
-
-#### 3. **ARU Inefficiency**
-
-ARU consistently receives minimal allocations despite decent returns (47.9%) due to:
-- Extremely high volatility (82.8%)
-- Poor risk-adjusted performance (Sharpe: 0.578)
-- Better alternatives available in both growth (NVDA) and defensive (SGLN) categories
-
-## Conclusion
-
-This 3D portfolio optimization analysis addresses the challenges of visualizing multi-dimensional Modern Portfolio Theory relationships, revealing that effective 4+ asset portfolio visualization requires multiple complementary perspectives rather than single 3D representation. The solution creates visualizations highlighting different optimization aspects: risk-return-Sharpe relationships, asset allocation patterns, dominant asset analysis, and enhanced 2D projections.
-
-The analysis reveals counterintuitive findings challenging conventional portfolio wisdom. Despite being a broad market ETF, VOO receives zero allocation in optimal portfolios because SGLN provides superior diversification benefits while NVDA offers better risk-adjusted growth exposure. The optimization consistently produces a "barbell" strategy combining high-growth exposure (NVDA) with defensive positioning (SGLN), while minimizing allocation to low-Sharpe assets (VOO, ARU). This suggests that concentrated exposure to complementary extremes may be more efficient than traditional diversification.
-
-Each visualization reveals distinct insights. The 3D Risk-Return-Sharpe surface shows maximum Sharpe ratios occur at moderate risk levels (~18% volatility) rather than return extremes. Asset allocation weight space demonstrates that optimal combinations cluster in specific regions, avoiding balanced allocations in favor of concentrated positions. The dominant asset analysis shows clear bifurcation between growth-dominated and defensive-dominated strategies.
-
-The methodology generates 22,090 valid portfolio combinations from 125,000 possible allocations with 17.7% computational efficiency using Python. Strategic asset selection included NVDA (high-growth technology), VOO (broad market), ARU (commodity volatility), and SGLN (defensive positioning). Surprisingly, SGLN's heavy weighting (up to 65.3%) in optimal portfolios reveals the critical importance of low-correlation assets, while ARU's minimal allocation despite attractive returns demonstrates how extreme volatility can make assets inefficient.
-
-This analysis provides empirical validation of Markowitz's framework while extending practical application through visualization. The findings suggest concentrated positions in complementary assets may outperform traditional balanced approaches. The emergence of the "barbell" strategy—combining high-growth technology exposure with defensive gold positioning while avoiding broad market exposure—represents an important finding reflecting the evolving nature of optimal portfolio construction in contemporary markets.
-
----
-
-The full code is available in the repository.
+## Reproducing the results
+
+Requires Python 3 (`pip install -r requirements.txt`) and, for the note, a LaTeX installation.
+Run from `code/`:
+
+| Step | Command | Output |
+|---|---|---|
+| 1 | `python fetch_data.py` | prices and exchange rates from Yahoo Finance, fixed dates |
+| 2 | `python part1_frontier.py` | asset statistics, correlations, exact frontier, reference portfolios, CVaR |
+| 3 | `python part2_out_of_sample.py` | rolling test and hold-out |
+| 4 | `python part3_bootstrap.py` | bootstrap of the optimal weights (~1 min) |
+| 5 | `python tables.py` | LaTeX tables and every number quoted in the note (`numbers.tex`) |
+| 6 | `python figures.py` | static figures |
+| 7 | `python plots.py` | interactive figures (`plots/`) |
+| 8 | `python build_site.py` | `index.html` |
+
+Then compile: `pdflatex main && pdflatex main`.
+
+Yahoo recomputes adjusted prices over time, so a later download can differ from the results stored
+here (downloaded 15 November 2026) in the last decimals. See [`data/README.md`](data/README.md).
+
+## About
+
+I built the first version in July 2025, in the summer before my final year of high school, and revised
+it in November 2026 as a first-year student at McGill University. AI tools assisted in developing this
+project. This is a study of method, not investment advice.
