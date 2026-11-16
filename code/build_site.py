@@ -24,6 +24,12 @@ a{color:var(--link)}
 .tile span{color:var(--ink2);font-size:0.86rem;line-height:1.35;display:block;margin-top:4px}
 figure{margin:16px 0 0}
 iframe{display:block;width:100%;border:1px solid var(--line);border-radius:8px;background:#fff}
+.frame{position:relative}
+.frame iframe{pointer-events:none}
+.frame.on iframe{pointer-events:auto;border-color:#8a8983}
+.frame button{position:absolute;right:14px;bottom:14px;font:inherit;font-size:0.85rem;color:var(--ink);background:#fff;
+border:1px solid #b5b4ae;border-radius:999px;padding:5px 14px;cursor:pointer}
+.frame.on button{display:none}
 figcaption{color:var(--ink2);font-size:0.9rem;margin-top:8px;max-width:80ch}
 figcaption a{white-space:nowrap}
 table{border-collapse:collapse;margin:8px 0 4px;font-size:0.93rem;font-variant-numeric:tabular-nums}
@@ -40,7 +46,8 @@ def pc(x, d=0):
 
 
 def fig(src, height, caption):
-    return (f'<figure><iframe src="plots/{src}" height="{height}" loading="lazy" title="{caption[:60]}"></iframe>'
+    return (f'<figure><div class="frame"><iframe src="plots/{src}" height="{height}" loading="lazy" title="{caption[:60]}"></iframe>'
+            f'<button type="button">Click to interact</button></div>'
             f'<figcaption>{caption} <a href="plots/{src}">Open full screen</a></figcaption></figure>')
 
 
@@ -89,7 +96,7 @@ and the "optimal" Nvidia weight could plausibly be anywhere from {pc(W['p05']['N
 <h2>1. Every portfolio in one picture</h2>
 <p>Four weights that sum to one leave three free dimensions, so the set of all long-only portfolios is a tetrahedron. Each corner is 100% in one asset.
 The cloud below is the {pc(G['share_within_10pct_of_max_sharpe'])} of portfolios whose Sharpe ratio is within 10% of the best: the optimum is a wide, flat region, not a point.</p>
-{fig("simplex.html", 620, "Drag to rotate; open it full screen to zoom with the mouse wheel. The menus switch between all portfolios and the near-optimal ones, and change what the colour shows. The black line is the efficient frontier.")}
+{fig("simplex.html", 620, "Click the figure, then drag to rotate and scroll to zoom. The menus switch between all portfolios and the near-optimal ones, and change what the colour shows. The black line is the efficient frontier.")}
 
 <h2>2. The efficient frontier</h2>
 <p>The frontier is solved exactly by quadratic programming. The best portfolio holds {pc(ms['weights']['NVDA'])} Nvidia, {pc(ms['weights']['SGLN'])} gold,
@@ -131,6 +138,16 @@ everything here is reproducible from the <a href="{REPO}">code</a>. This is a st
 <p>AI tools assisted in developing this project.</p>
 </footer>
 </main>
+<script>
+// Figures respond to the mouse only after a click, so that scrolling the page never gets caught in one.
+document.querySelectorAll(".frame").forEach(function (f) {{
+  f.addEventListener("click", function () {{ f.classList.add("on"); }});
+  f.addEventListener("mouseleave", function () {{ f.classList.remove("on"); }});
+}});
+document.addEventListener("pointerdown", function (e) {{
+  document.querySelectorAll(".frame.on").forEach(function (f) {{ if (!f.contains(e.target)) f.classList.remove("on"); }});
+}});
+</script>
 </body>
 </html>
 """

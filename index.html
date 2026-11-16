@@ -23,6 +23,12 @@ a{color:var(--link)}
 .tile span{color:var(--ink2);font-size:0.86rem;line-height:1.35;display:block;margin-top:4px}
 figure{margin:16px 0 0}
 iframe{display:block;width:100%;border:1px solid var(--line);border-radius:8px;background:#fff}
+.frame{position:relative}
+.frame iframe{pointer-events:none}
+.frame.on iframe{pointer-events:auto;border-color:#8a8983}
+.frame button{position:absolute;right:14px;bottom:14px;font:inherit;font-size:0.85rem;color:var(--ink);background:#fff;
+border:1px solid #b5b4ae;border-radius:999px;padding:5px 14px;cursor:pointer}
+.frame.on button{display:none}
 figcaption{color:var(--ink2);font-size:0.9rem;margin-top:8px;max-width:80ch}
 figcaption a{white-space:nowrap}
 table{border-collapse:collapse;margin:8px 0 4px;font-size:0.93rem;font-variant-numeric:tabular-nums}
@@ -54,18 +60,18 @@ and the "optimal" Nvidia weight could plausibly be anywhere from 21% to 71%.</p>
 <h2>1. Every portfolio in one picture</h2>
 <p>Four weights that sum to one leave three free dimensions, so the set of all long-only portfolios is a tetrahedron. Each corner is 100% in one asset.
 The cloud below is the 19% of portfolios whose Sharpe ratio is within 10% of the best: the optimum is a wide, flat region, not a point.</p>
-<figure><iframe src="plots/simplex.html" height="620" loading="lazy" title="Drag to rotate; open it full screen to zoom with the mouse w"></iframe><figcaption>Drag to rotate; open it full screen to zoom with the mouse wheel. The menus switch between all portfolios and the near-optimal ones, and change what the colour shows. The black line is the efficient frontier. <a href="plots/simplex.html">Open full screen</a></figcaption></figure>
+<figure><div class="frame"><iframe src="plots/simplex.html" height="620" loading="lazy" title="Click the figure, then drag to rotate and scroll to zoom. Th"></iframe><button type="button">Click to interact</button></div><figcaption>Click the figure, then drag to rotate and scroll to zoom. The menus switch between all portfolios and the near-optimal ones, and change what the colour shows. The black line is the efficient frontier. <a href="plots/simplex.html">Open full screen</a></figcaption></figure>
 
 <h2>2. The efficient frontier</h2>
 <p>The frontier is solved exactly by quadratic programming. The best portfolio holds 40% Nvidia, 54% gold,
 5% Arafura and no S&amp;P 500. The lower panel shows what the frontier holds at each level of risk.</p>
-<figure><iframe src="plots/frontier.html" height="600" loading="lazy" title="Each dot is one of 12,341 portfolios. Returns are weekly, in"></iframe><figcaption>Each dot is one of 12,341 portfolios. Returns are weekly, in US dollars, over Treasury bills, 31 July 2015 to 25 July 2025. <a href="plots/frontier.html">Open full screen</a></figcaption></figure>
+<figure><div class="frame"><iframe src="plots/frontier.html" height="600" loading="lazy" title="Each dot is one of 12,341 portfolios. Returns are weekly, in"></iframe><button type="button">Click to interact</button></div><figcaption>Each dot is one of 12,341 portfolios. Returns are weekly, in US dollars, over Treasury bills, 31 July 2015 to 25 July 2025. <a href="plots/frontier.html">Open full screen</a></figcaption></figure>
 
 <h2>3. Tail risk that volatility misses</h2>
 <p>Height shows each portfolio's average loss in its worst 5% of weeks (CVaR), divided by what a normal distribution with the same volatility implies.
 On the grey plane the normal distribution is right. The S&amp;P 500 fund sits highest at 1.22: its large moves are crashes.
 Arafura sits lowest at 0.86: its large moves are jumps upwards.</p>
-<figure><iframe src="plots/risk_return_tail.html" height="620" loading="lazy" title="Colour shows the largest holding; the menu switches it to th"></iframe><figcaption>Colour shows the largest holding; the menu switches it to the tail ratio or the Sharpe ratio. <a href="plots/risk_return_tail.html">Open full screen</a></figcaption></figure>
+<figure><div class="frame"><iframe src="plots/risk_return_tail.html" height="620" loading="lazy" title="Colour shows the largest holding; the menu switches it to th"></iframe><button type="button">Click to interact</button></div><figcaption>Colour shows the largest holding; the menu switches it to the tail ratio or the Sharpe ratio. <a href="plots/risk_return_tail.html">Open full screen</a></figcaption></figure>
 
 <h2>4. Out of sample</h2>
 <p>Every four weeks from July 2018, each rule is estimated on the previous three years only and held for the next four weeks.
@@ -75,20 +81,20 @@ with the deepest drawdown and the most trading. The differences between the rule
 <tr><th>Rule</th><th>Sharpe</th><th>Growth a year</th><th>Volatility</th><th>Worst drawdown</th><th>Turnover a year</th></tr>
 <tr><td>Maximum Sharpe</td><td>0.88</td><td>27%</td><td>29%</td><td>-47%</td><td>93%</td></tr><tr><td>Equal weight</td><td>0.92</td><td>28%</td><td>28%</td><td>-33%</td><td>49%</td></tr><tr><td>Risk parity</td><td>1.10</td><td>23%</td><td>18%</td><td>-26%</td><td>33%</td></tr><tr><td>Minimum variance</td><td>0.92</td><td>15%</td><td>13%</td><td>-18%</td><td>20%</td></tr>
 </table>
-<figure><iframe src="plots/out_of_sample.html" height="600" loading="lazy" title="Top: value of $1 under each rule. Bottom: the weights the ma"></iframe><figcaption>Top: value of $1 under each rule. Bottom: the weights the maximum-Sharpe rule chose at each rebalance. <a href="plots/out_of_sample.html">Open full screen</a></figcaption></figure>
+<figure><div class="frame"><iframe src="plots/out_of_sample.html" height="600" loading="lazy" title="Top: value of $1 under each rule. Bottom: the weights the ma"></iframe><button type="button">Click to interact</button></div><figcaption>Top: value of $1 under each rule. Bottom: the weights the maximum-Sharpe rule chose at each rebalance. <a href="plots/out_of_sample.html">Open full screen</a></figcaption></figure>
 
 <h2>5. What happened after July 2025</h2>
 <p>The published portfolio is a real hold-out test. It returned +12.6% with a Sharpe ratio of 0.36,
 against 1.56 in sample. The S&amp;P 500 fund, which it excluded, returned +20.1%.
 The comparison depends on the end date: the portfolio was ahead of the S&amp;P 500 at 41 of 43 possible end dates since January 2026
 and fell behind in the last two weeks. Its risk was misjudged either way: gold's volatility was 22% against 14% before.</p>
-<figure><iframe src="plots/holdout.html" height="520" loading="lazy" title="Return since 25 July 2025. The portfolio is rebalanced to it"></iframe><figcaption>Return since 25 July 2025. The portfolio is rebalanced to its published weights every four weeks. <a href="plots/holdout.html">Open full screen</a></figcaption></figure>
+<figure><div class="frame"><iframe src="plots/holdout.html" height="520" loading="lazy" title="Return since 25 July 2025. The portfolio is rebalanced to it"></iframe><button type="button">Click to interact</button></div><figcaption>Return since 25 July 2025. The portfolio is rebalanced to its published weights every four weeks. <a href="plots/holdout.html">Open full screen</a></figcaption></figure>
 
 <h2>6. How stable are the optimal weights?</h2>
 <p>Resampling the ten years 2,000 times gives 2,000 "optimal" portfolios. The maximum-Sharpe points smear along the whole Nvidia–gold edge,
 while minimum-variance and risk-parity portfolios, which do not use expected returns, stay in tight clusters.
 The maximum-Sharpe weights are 4.6 times as dispersed as the minimum-variance ones.</p>
-<figure><iframe src="plots/bootstrap.html" height="620" loading="lazy" title="Each dot is the optimal portfolio in one bootstrap resample."></iframe><figcaption>Each dot is the optimal portfolio in one bootstrap resample. Diamonds are the estimates from the actual sample. <a href="plots/bootstrap.html">Open full screen</a></figcaption></figure>
+<figure><div class="frame"><iframe src="plots/bootstrap.html" height="620" loading="lazy" title="Each dot is the optimal portfolio in one bootstrap resample."></iframe><button type="button">Click to interact</button></div><figcaption>Each dot is the optimal portfolio in one bootstrap resample. Diamonds are the estimates from the actual sample. <a href="plots/bootstrap.html">Open full screen</a></figcaption></figure>
 
 <footer>
 <p>Data: Yahoo Finance, weekly returns in US dollars with dividends reinvested. Method, limitations and references are in the <a href="TOK_EFFICIENT_FRONTIER_3D.pdf">note</a>;
@@ -96,5 +102,15 @@ everything here is reproducible from the <a href="https://github.com/2008MT/effi
 <p>AI tools assisted in developing this project.</p>
 </footer>
 </main>
+<script>
+// Figures respond to the mouse only after a click, so that scrolling the page never gets caught in one.
+document.querySelectorAll(".frame").forEach(function (f) {
+  f.addEventListener("click", function () { f.classList.add("on"); });
+  f.addEventListener("mouseleave", function () { f.classList.remove("on"); });
+});
+document.addEventListener("pointerdown", function (e) {
+  document.querySelectorAll(".frame.on").forEach(function (f) { if (!f.contains(e.target)) f.classList.remove("on"); });
+});
+</script>
 </body>
 </html>
