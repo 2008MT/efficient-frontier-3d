@@ -31,7 +31,7 @@ exercise with the measurement fixed, then tests it on data the optimiser never s
 
 ## What changed since the first version
 
-The first version is kept in [`legacy/`](legacy/). Rereading it a year later I found four problems.
+Rereading the first version (July 2025, in this repository's commit history) a year later, I found four problems.
 
 | Problem in the first version | Fix |
 |---|---|
@@ -155,7 +155,6 @@ code/                              Python code that produces every number, table
 results/                           output of the code (JSON and CSV)
 figures/                           static figures
 data/                              data description (prices are downloaded, not stored)
-legacy/                            the first version (July 2025), unchanged
 ```
 
 ## Reproducing the results
@@ -182,5 +181,6 @@ here (downloaded 15 November 2026) in the last decimals. See [`data/README.md`](
 ## About
 
 I built the first version in July 2025, in the summer before my final year of high school, and revised
-it in November 2026 as a first-year student at McGill University. AI tools assisted in developing this
-project. This is a study of method, not investment advice.
+it in November 2026 as a first-year student at McGill University. AI tools assisted with the first
+version. Claude (Anthropic) was used in the November 2026 update, including the out-of-sample backtest
+on data from July 2025 to November 2026. This is a study of method, not investment advice.

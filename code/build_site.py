@@ -135,7 +135,8 @@ The maximum-Sharpe weights are {p3['dispersion_ratio_max_sharpe_vs_min_variance'
 <footer>
 <p>Data: Yahoo Finance, weekly returns in US dollars with dividends reinvested. Method, limitations and references are in the <a href="{NOTE}">note</a>;
 everything here is reproducible from the <a href="{REPO}">code</a>. This is a study of method, not investment advice.</p>
-<p>AI tools assisted in developing this project.</p>
+<p>AI tools assisted with the first version. Claude (Anthropic) was used in the November 2026 update, including the out-of-sample
+backtest on data from July 2025 to November 2026.</p>
 </footer>
 </main>
 <script>
