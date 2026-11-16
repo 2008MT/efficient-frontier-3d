@@ -236,7 +236,7 @@ def fig_frontier(G, gs, ports, fr, mu, cov, R):
     fig.update_yaxes(**grid)
     fig.update_xaxes(title_text="Volatility (% a year)", row=2, col=1, range=[8, 78])
     fig.update_yaxes(title_text="Excess return (% a year)", row=1, col=1, range=[0, 80])
-    fig.update_yaxes(title_text="Weight on the frontier (%)", row=2, col=1, range=[0, 100])
+    fig.update_yaxes(title_text="Frontier weights (%)", row=2, col=1, range=[0, 100])
     save(fig, "frontier.html", "The efficient frontier and what it holds")
 
 
@@ -259,7 +259,7 @@ def fig_rolling():
     fig.update_xaxes(**grid)
     fig.update_yaxes(**grid)
     fig.update_yaxes(title_text="Value of $1 (log scale)", type="log", row=1, col=1)
-    fig.update_yaxes(title_text="Maximum-Sharpe weights (%)", range=[0, 100], row=2, col=1)
+    fig.update_yaxes(title_text="Weights (%)", range=[0, 100], row=2, col=1)
     save(fig, "out_of_sample.html", "Rolling out-of-sample test")
 
 
