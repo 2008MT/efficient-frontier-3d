@@ -89,7 +89,7 @@ and the "optimal" Nvidia weight could plausibly be anywhere from {pc(W['p05']['N
 <h2>1. Every portfolio in one picture</h2>
 <p>Four weights that sum to one leave three free dimensions, so the set of all long-only portfolios is a tetrahedron. Each corner is 100% in one asset.
 The cloud below is the {pc(G['share_within_10pct_of_max_sharpe'])} of portfolios whose Sharpe ratio is within 10% of the best: the optimum is a wide, flat region, not a point.</p>
-{fig("simplex.html", 620, "Drag to rotate. The menus switch between all portfolios and the near-optimal ones, and change what the colour shows. The black line is the efficient frontier.")}
+{fig("simplex.html", 620, "Drag to rotate; open it full screen to zoom with the mouse wheel. The menus switch between all portfolios and the near-optimal ones, and change what the colour shows. The black line is the efficient frontier.")}
 
 <h2>2. The efficient frontier</h2>
 <p>The frontier is solved exactly by quadratic programming. The best portfolio holds {pc(ms['weights']['NVDA'])} Nvidia, {pc(ms['weights']['SGLN'])} gold,

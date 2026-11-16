@@ -55,6 +55,10 @@ def save(fig, name, title):
     head = ('<meta name="viewport" content="width=device-width, initial-scale=1">'
             f"<title>{title}</title><style>html,body{{margin:0;background:#fff;overflow:hidden}}</style>")
     html = html.replace('<head><meta charset="utf-8" /></head>', f'<head><meta charset="utf-8" />{head}</head>')
+    # when a page is embedded in the landing page, the mouse wheel should scroll the page, not zoom the figure
+    marker = '"responsive": true'
+    assert html.count(marker) == 1
+    html = html.replace(marker, marker + ', "scrollZoom": window.self === window.top')
     path = os.path.join(DOCS, name)
     with open(path, "w", encoding="utf-8") as f:
         f.write(html)
