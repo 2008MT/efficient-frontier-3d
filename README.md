@@ -181,6 +181,5 @@ here (downloaded 15 November 2026) in the last decimals. See [`data/README.md`](
 ## About
 
 I built the first version in July 2025, in the summer before my final year of high school, and revised
-it in November 2026 as a first-year student at McGill University. AI tools assisted with the first
-version. Claude (Anthropic) was used in the November 2026 update, including the out-of-sample backtest
+it in November 2026 as a first-year student at McGill University. Claude (Anthropic) was used in the November 2026 update, including the out-of-sample backtest
 on data from July 2025 to November 2026. This is a study of method, not investment advice.
